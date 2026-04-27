@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deskflow — Competitive Intel Hub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0f0f0e;
+    --ink2: #4a4843;
+    --ink3: #8a8782;
+    --surface: #faf9f7;
+    --surface2: #f2f0ec;
+    --surface3: #e8e5df;
+    --border: rgba(15,15,14,0.12);
+    --border2: rgba(15,15,14,0.22);
+    --accent: #c25b2a;
+    --accent-bg: #fdf0e8;
+    --green: #2a7a4a;
+    --green-bg: #eaf5ef;
+    --amber: #8a5c00;
+    --amber-bg: #fef8e8;
+    --red: #9a2b2b;
+    --red-bg: #fdf0f0;
+    --blue: #1e5799;
+    --blue-bg: #edf3fc;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'Instrument Sans', system-ui, sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  body { font-family: var(--sans); background: var(--surface); color: var(--ink); min-height: 100vh; }
+
+  /* ── Header ── */
+  .header {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    width: 32px; height: 32px; background: var(--ink);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark svg { width: 18px; height: 18px; fill: var(--surface); }
+  .logo-text { font-family: var(--serif); font-size: 18px; letter-spacing: -0.3px; }
+  .logo-sub {
+    font-size: 11px; font-weight: 500; color: var(--ink3);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    border-left: 1px solid var(--border2); padding-left: 10px; margin-left: 2px;
+  }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 100px; letter-spacing: 0.04em; }
+  .badge-live { background: #dcfce7; color: #166534; display: none; }
+  .badge-sources { background: var(--surface2); color: var(--ink2); border: 1px solid var(--border); }
+
+  /* ── Main layout ── */
+  .main { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .section-label {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink3); margin-bottom: 12px;
+  }
+
+  /* ── Config panel ── */
+  .config-panel {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 16px; padding: 28px; margin-bottom: 28px;
+  }
+  .config-title { font-family: var(--serif); font-size: 26px; letter-spacing: -0.5px; margin-bottom: 6px; line-height: 1.2; }
+  .config-desc { font-size: 14px; color: var(--ink2); margin-bottom: 24px; line-height: 1.6; }
+
+  .competitors-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+  .competitor-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 100px; padding: 6px 14px 6px 6px;
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+    user-select: none;
+  }
+  .competitor-chip.selected { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .chip-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--surface3); display: flex; align-items: center;
+    justify-content: center; font-size: 9px; font-weight: 700;
+    font-family: var(--mono); flex-shrink: 0;
+  }
+  .competitor-chip.selected .chip-dot { background: rgba(255,255,255,0.18); color: white; }
+
+  .add-competitor { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+  .add-competitor input {
+    font-family: var(--sans); font-size: 13px; padding: 7px 12px;
+    border: 1px solid var(--border2); border-radius: 8px;
+    background: var(--surface); color: var(--ink); outline: none; width: 220px; transition: border-color 0.15s;
+  }
+  .add-competitor input:focus { border-color: var(--ink); }
+
+  .btn {
+    font-family: var(--sans); font-size: 13px; font-weight: 500;
+    padding: 7px 16px; border-radius: 8px; cursor: pointer;
+    transition: all 0.15s; border: 1px solid transparent; outline: none;
+  }
+  .btn-ghost { background: transparent; border-color: var(--border2); color: var(--ink2); }
+  .btn-ghost:hover { background: var(--surface2); color: var(--ink); }
+  .btn-primary {
+    background: var(--ink); color: var(--surface); border-color: var(--ink);
+    font-size: 14px; font-weight: 600; padding: 10px 24px;
+    border-radius: 10px; letter-spacing: -0.1px;
+  }
+  .btn-primary:hover { background: #2a2a28; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-download {
+    background: transparent; border: 1px solid var(--border2); color: var(--ink2);
+    font-size: 12px; padding: 6px 14px; border-radius: 8px;
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    font-family: var(--sans); font-weight: 500;
+  }
+  .btn-download:hover { border-color: var(--ink); color: var(--ink); background: var(--surface2); }
+
+  .sources-row { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .source-pill {
+    display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500;
+    padding: 5px 10px; border-radius: 100px; border: 1px solid var(--border);
+    color: var(--ink2); background: var(--surface2);
+  }
+  .source-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .generate-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .generate-hint { font-size: 12px; color: var(--ink3); }
+
+  /* ── Progress ── */
+  .progress-section { margin-bottom: 28px; }
+  .progress-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; padding: 24px 28px; }
+  .progress-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .spinner {
+    width: 18px; height: 18px; border: 2px solid var(--border2);
+    border-top-color: var(--ink); border-radius: 50%;
+    animation: spin 0.7s linear infinite; flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .progress-title { font-size: 14px; font-weight: 600; }
+  .progress-subtitle { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+  .progress-steps { display: flex; flex-direction: column; gap: 10px; }
+  .step-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink2); }
+  .step-icon {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; flex-shrink: 0;
+  }
+  .step-pending { background: var(--surface3); color: var(--ink3); }
+  .step-active { background: var(--ink); color: white; }
+  .step-done { background: #dcfce7; color: #166534; }
+  .step-error { background: var(--red-bg); color: var(--red); }
+
+  /* ── Error / Empty ── */
+  .error-card {
+    background: var(--red-bg); border: 1px solid rgba(154,43,43,0.2);
+    border-radius: 12px; padding: 16px 20px; font-size: 13px;
+    color: var(--red); line-height: 1.6; margin-bottom: 20px;
+  }
+  .empty-state {
+    text-align: center; padding: 60px 24px;
+    border: 1px dashed var(--border2); border-radius: 16px; margin-bottom: 20px;
+  }
+  .empty-icon { font-size: 32px; margin-bottom: 12px; }
+  .empty-title { font-family: var(--serif); font-size: 20px; margin-bottom: 8px; }
+  .empty-desc { font-size: 13px; color: var(--ink3); line-height: 1.6; }
+
+  /* ── Briefing ── */
+  .briefing-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px; margin-bottom: 28px; padding-bottom: 24px;
+    border-bottom: 1px solid var(--border); flex-wrap: wrap;
+  }
+  .briefing-eyebrow {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;
+  }
+  .briefing-headline { font-family: var(--serif); font-size: 32px; letter-spacing: -0.8px; line-height: 1.1; }
+  .briefing-meta { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+  .meta-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink3); }
+  .briefing-actions { display: flex; gap: 8px; flex-shrink: 0; margin-top: 6px; flex-wrap: wrap; align-items: flex-start; }
+
+  .data-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .data-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .data-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .data-card-title { font-size: 12px; font-weight: 600; color: var(--ink3); letter-spacing: 0.06em; text-transform: uppercase; }
+  .data-count { font-size: 26px; font-weight: 600; font-family: var(--mono); letter-spacing: -1px; }
+  .data-sub { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+
+  .source-tag {
+    font-size: 10px; font-weight: 600; padding: 2px 6px;
+    border-radius: 4px; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .source-hn { background: #fff3e0; color: #e65100; }
+  .source-reddit { background: #fce8e0; color: #bf360c; }
+
+  /* Raw mentions */
+  .raw-mentions { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .raw-toggle { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; user-select: none; background: var(--surface2); }
+  .raw-toggle:hover { background: var(--surface3); }
+  .raw-toggle-label { font-size: 12px; font-weight: 600; color: var(--ink2); }
+  .raw-toggle-arrow { font-size: 12px; color: var(--ink3); transition: transform 0.2s; }
+  .raw-list { display: none; max-height: 320px; overflow-y: auto; padding: 12px; gap: 8px; flex-direction: column; }
+  .raw-list.open { display: flex; }
+  .raw-item { background: var(--surface2); border-radius: 8px; padding: 10px 12px; }
+  .raw-item-header { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+  .raw-title { font-weight: 500; color: var(--ink); font-size: 12px; }
+  .raw-body { font-size: 12px; line-height: 1.6; color: var(--ink2); }
+
+  /* Competitor sections */
+  .competitor-section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 20px;
+  }
+  .competitor-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .competitor-name-row { display: flex; align-items: center; gap: 10px; }
+  .competitor-avatar {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; font-family: var(--mono);
+    background: var(--surface2); border: 1px solid var(--border); flex-shrink: 0;
+  }
+  .competitor-name { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; }
+  .competitor-mention-count { font-size: 12px; color: var(--ink3); font-family: var(--mono); }
+  .sentiment-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; letter-spacing: 0.03em; }
+  .sentiment-positive { background: var(--green-bg); color: var(--green); }
+  .sentiment-neutral { background: var(--amber-bg); color: var(--amber); }
+  .sentiment-negative { background: var(--red-bg); color: var(--red); }
+  .sentiment-mixed { background: var(--blue-bg); color: var(--blue); }
+
+  .body-section { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+  .body-section:last-child { border-bottom: none; }
+  .body-section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
+  .sentiment-text { font-size: 14px; line-height: 1.7; color: var(--ink2); }
+  .themes-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .theme-tag { font-size: 12px; padding: 4px 10px; border-radius: 6px; background: var(--surface2); border: 1px solid var(--border); color: var(--ink2); font-weight: 500; }
+  .quotes-list { display: flex; flex-direction: column; gap: 10px; }
+  .quote-card { background: var(--surface2); border-left: 3px solid var(--border2); border-radius: 0 8px 8px 0; padding: 12px 14px; }
+  .quote-text { font-size: 13px; line-height: 1.6; color: var(--ink); font-style: italic; margin-bottom: 6px; }
+  .quote-meta { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--ink3); font-family: var(--mono); }
+
+  /* Opportunities */
+  .opportunities-section { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+  .opps-header { padding: 18px 24px 16px; background: var(--ink); display: flex; align-items: center; gap: 10px; }
+  .opps-title { font-family: var(--serif); font-size: 18px; color: var(--surface); letter-spacing: -0.3px; }
+  .opps-body { padding: 20px 24px; }
+  .opp-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .opp-item:last-child { border-bottom: none; }
+  .opp-number { font-size: 12px; font-weight: 700; font-family: var(--mono); color: var(--ink3); width: 20px; flex-shrink: 0; padding-top: 2px; }
+  .opp-title-text { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .opp-desc { font-size: 13px; color: var(--ink2); line-height: 1.6; }
+
+  @media (max-width: 600px) {
+    .main { padding: 24px 16px 60px; }
+    .header { padding: 14px 16px; }
+    .briefing-headline { font-size: 24px; }
+    .data-row { grid-template-columns: 1fr; }
+    .briefing-header { flex-direction: column; }
+    .config-panel { padding: 20px; }
+    .logo-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="6" height="6" rx="1.5"/>
+        <rect x="10" y="2" width="6" height="6" rx="1.5"/>
+        <rect x="2" y="10" width="6" height="6" rx="1.5"/>
+        <rect x="10" y="10" width="6" height="6" rx="1.5" opacity="0.4"/>
+      </svg>
+    </div>
+    <span class="logo-text">Deskflow</span>
+    <span class="logo-sub">Intel Hub</span>
+  </div>
+  <div class="header-right">
+    <span class="badge badge-sources" id="sourcesBadge">HN + Reddit</span>
+    <span class="badge badge-live" id="liveBadge">● Live</span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Config panel -->
+  <div class="config-panel" id="configPanel">
+    <div class="config-title">Competitive Intelligence Briefing</div>
+    <p class="config-desc">Pull real-time competitor mentions from Hacker News &amp; Reddit, then generate a structured intelligence briefing powered by Claude AI. Replaces your Monday morning manual sweep.</p>
+
+    <div class="section-label">Competitors to monitor</div>
+    <div class="competitors-grid" id="competitorsGrid"></div>
+
+    <div class="add-competitor">
+      <input type="text" id="newCompetitorInput" placeholder="Add competitor…" maxlength="80" />
+      <button class="btn btn-ghost" onclick="addCompetitor()">+ Add</button>
+    </div>
+
+    <div class="section-label">Data sources</div>
+    <div class="sources-row">
+      <div class="source-pill"><div class="source-dot" style="background:#e65100"></div>Hacker News (Algolia API)</div>
+      <div class="source-pill"><div class="source-dot" style="background:#bf360c"></div>Reddit (JSON API)</div>
+      <div class="source-pill" style="color:var(--ink3)">+ Claude AI analysis</div>
+    </div>
+
+    <div class="generate-row">
+      <button class="btn btn-primary" id="generateBtn" onclick="generateBriefing()">Generate Briefing →</button>
+      <span class="generate-hint" id="generateHint">Fetches ~30 mentions per competitor across both sources</span>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div id="progressSection" style="display:none" class="progress-section">
+    <div class="progress-card">
+      <div class="progress-header">
+        <div class="spinner"></div>
+        <div>
+          <div class="progress-title" id="progressTitle">Fetching mentions…</div>
+          <div class="progress-subtitle">This usually takes 20–40 seconds</div>
+        </div>
+      </div>
+      <div class="progress-steps" id="progressSteps"></div>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div id="errorSection" style="display:none">
+    <div class="error-card" id="errorCard"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div id="emptyState" style="display:none" class="empty-state">
+    <div class="empty-icon">◎</div>
+    <div class="empty-title">No mentions found</div>
+    <p class="empty-desc">No recent mentions were found for the selected competitors on Hacker News or Reddit. Try different names or check back later.</p>
+    <button class="btn btn-ghost" style="margin-top:16px" onclick="resetUI()">← Back</button>
+  </div>
+
+  <!-- Briefing output -->
+  <div id="briefingSection" style="display:none">
+    <div class="briefing-header">
+      <div>
+        <div class="briefing-eyebrow">Weekly Intelligence Briefing</div>
+        <div class="briefing-headline" id="briefingHeadline"></div>
+        <div class="briefing-meta">
+          <div class="meta-item" id="metaDate"></div>
+          <div class="meta-item" id="metaMentions"></div>
+          <div class="meta-item" id="metaSources"></div>
+        </div>
+      </div>
+      <div class="briefing-actions">
+        <button class="btn btn-download" onclick="downloadMarkdown()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v9M5 8l3 3 3-3M2 13h12"/></svg>
+          Download .md
+        </button>
+        <button class="btn btn-download" onclick="resetUI()">← New briefing</button>
+      </div>
+    </div>
+
+    <div class="data-row" id="dataRow"></div>
+    <div id="rawSection"></div>
+    <div id="execSummary"></div>
+    <div id="competitorSections"></div>
+    <div id="opportunitiesSection"></div>
+  </div>
+
+</div>
+
+<script>
+  // ── State ──
+  let competitors = [
+    { name: 'Freshservice', abbr: 'FS', active: true },
+    { name: 'Jira Service Management', abbr: 'JSM', active: true },
+    { name: 'SysAid', abbr: 'SA', active: true }
+  ];
+  let lastBriefing = null;
+  let lastMentionStats = null;
+  let rawMarkdown = '';
+
+  // ── Chip rendering ──
+  function renderCompetitors() {
+    const grid = document.getElementById('competitorsGrid');
+    grid.innerHTML = '';
+    competitors.forEach((c, i) => {
+      const el = document.createElement('div');
+      el.className = 'competitor-chip' + (c.active ? ' selected' : '');
+      el.innerHTML = `<div class="chip-dot">${c.abbr}</div>${c.name}`;
+      el.onclick = () => { competitors[i].active = !competitors[i].active; renderCompetitors(); };
+      grid.appendChild(el);
+    });
+  }
+
+  function addCompetitor() {
+    const input = document.getElementById('newCompetitorInput');
+    const val = input.value.trim();
+    if (!val) return;
+    if (competitors.find(c => c.name.toLowerCase() === val.toLowerCase())) { input.value = ''; return; }
+    const abbr = val.split(/\s+/).map(w => w[0] || '').join('').toUpperCase().slice(0, 3) || 'XX';
+    competitors.push({ name: val, abbr, active: true });
+    input.value = '';
+    renderCompetitors();
+  }
+
+  document.getElementById('newCompetitorInput').addEventListener('keydown', e => { if (e.key === 'Enter') addCompetitor(); });
+
+  // ── Progress ──
+  const STEPS = [
+    'Fetching Hacker News mentions…',
+    'Fetching Reddit discussions…',
+    'Sending mentions to Claude…',
+    'Generating intelligence briefing…',
+    'Rendering results…'
+  ];
+
+  function setStep(idx) {
+    const container = document.getElementById('progressSteps');
+    container.innerHTML = STEPS.map((s, i) => {
+      let cls = 'step-pending', icon = String(i + 1);
+      if (i < idx) { cls = 'step-done'; icon = '✓'; }
+      else if (i === idx) { cls = 'step-active'; icon = '→'; }
+      return `<div class="step-row"><div class="step-icon ${cls}">${icon}</div><span>${s}</span></div>`;
+    }).join('');
+  }
+
+  // ── Main generate flow ──
+  async function generateBriefing() {
+    const active = competitors.filter(c => c.active);
+    if (!active.length) { alert('Please select at least one competitor.'); return; }
+
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('liveBadge').style.display = '';
+    document.getElementById('briefingSection').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('errorSection').style.display = 'none';
+    document.getElementById('progressSection').style.display = '';
+    setStep(0);
+    document.getElementById('progressTitle').textContent = 'Fetching mentions from Hacker News & Reddit…';
+
+    // Animate steps while waiting for the server
+    let stepTimer = 0;
+    const stepInterval = setInterval(() => {
+      stepTimer = Math.min(stepTimer + 1, 3);
+      setStep(stepTimer);
+    }, 4000);
+
+    try {
+      const resp = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ competitors: active.map(c => c.name) })
+      });
+
+      clearInterval(stepInterval);
+      setStep(4);
+
+      const body = await resp.json();
+
+      if (!resp.ok) {
+        throw new Error(body.error + (body.details ? ': ' + body.details : ''));
+      }
+
+      if (!body.briefing) {
+        document.getElementById('progressSection').style.display = 'none';
+        document.getElementById('emptyState').style.display = '';
+        document.getElementById('generateBtn').disabled = false;
+        document.getElementById('liveBadge').style.display = 'none';
+        return;
+      }
+
+      lastBriefing = body.briefing;
+      lastMentionStats = body.mentionStats;
+
+      setTimeout(() => {
+        document.getElementById('progressSection').style.display = 'none';
+        document.getElementById('liveBadge').style.display = 'none';
+        renderBriefing(body.briefing, body.mentionStats, body.fetchErrors || []);
+        document.getElementById('generateBtn').disabled = false;
+        rawMarkdown = buildMarkdown(body.briefing, body.mentionStats, active);
+      }, 400);
+
+    } catch (err) {
+      clearInterval(stepInterval);
+      document.getElementById('progressSection').style.display = 'none';
+      document.getElementById('liveBadge').style.display = 'none';
+      document.getElementById('errorSection').style.display = '';
+      document.getElementById('errorCard').innerHTML = `<strong>Error:</strong> ${escHtml(err.message)}`;
+      document.getElementById('generateBtn').disabled = false;
+    }
+  }
+
+  // ── Render briefing ──
+  function sentimentClass(s) {
+    if (!s) return 'sentiment-neutral';
+    const m = { positive: 'sentiment-positive', negative: 'sentiment-negative', mixed: 'sentiment-mixed' };
+    return m[s.toLowerCase()] || 'sentiment-neutral';
+  }
+
+  function renderBriefing(data, stats, fetchErrors) {
+    const now = new Date();
+    document.getElementById('briefingHeadline').textContent = data.headline || 'Competitive Briefing';
+    document.getElementById('metaDate').innerHTML = iconSVG('cal') + now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('metaMentions').innerHTML = iconSVG('clock') + (stats?.total || 0) + ' mentions analysed';
+    document.getElementById('metaSources').innerHTML = iconSVG('doc') + 'Hacker News + Reddit';
+
+    // Data cards
+    document.getElementById('dataRow').innerHTML = `
+      <div class="data-card">
+        <div class="data-card-header">
+          <div class="data-card-title">Hacker News</div>
+          <span class="source-tag source-hn">HN</span>
+        </div>
+        <div class="data-count">${stats?.bySource?.HN ?? 0}</div>
+        <div class="data-sub">mentions & comments</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-header">
+          <div class="data-card-title">Reddit</div>
+          <span class="source-tag source-reddit">RDT</span>
+        </div>
+        <div class="data-count">${stats?.bySource?.Reddit ?? 0}</div>
+        <div class="data-sub">posts & discussions</div>
+      </div>`;
+
+    // Fetch error notice
+    document.getElementById('rawSection').innerHTML = fetchErrors.length
+      ? `<div class="error-card" style="margin-bottom:16px"><strong>Note:</strong> Some sources had partial failures — results may be incomplete. ${escHtml(fetchErrors.join('; '))}</div>`
+      : '';
+
+    // Exec summary
+    document.getElementById('execSummary').innerHTML = data.executive_summary
+      ? `<div style="background:var(--accent-bg);border:1px solid rgba(194,91,42,0.2);border-radius:14px;padding:18px 22px;margin-bottom:20px;">
+          <div class="section-label" style="color:var(--accent)">Executive Summary</div>
+          <p style="font-size:14px;line-height:1.7;color:var(--ink2);">${escHtml(data.executive_summary)}</p>
+        </div>`
+      : '';
+
+    // Competitor sections
+    const compEl = document.getElementById('competitorSections');
+    compEl.innerHTML = '';
+    (data.competitors || []).forEach(comp => {
+      const abbr = (competitors.find(c => c.name === comp.name)?.abbr ||
+        comp.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 3));
+      const themes = (comp.top_themes || []).map(t => `<div class="theme-tag">${escHtml(t)}</div>`).join('');
+      const quotes = (comp.notable_quotes || []).map(q => `
+        <div class="quote-card">
+          <div class="quote-text">"${escHtml(q.text)}"</div>
+          <div class="quote-meta">
+            <span class="source-tag ${q.source === 'HN' ? 'source-hn' : 'source-reddit'}">${escHtml(q.source || 'Source')}</span>
+            ${escHtml(q.context || '')}
+          </div>
+        </div>`).join('');
+      const threats = (comp.threats || []).map(t =>
+        `<div style="font-size:13px;color:var(--red);padding:5px 0;border-bottom:1px solid var(--border);line-height:1.5;">${escHtml(t)}</div>`
+      ).join('');
+      const mentionCount = stats?.byCompetitor?.[comp.name]?.total ?? (comp.mention_count || 0);
+
+      const el = document.createElement('div');
+      el.className = 'competitor-section';
+      el.innerHTML = `
+        <div class="competitor-header">
+          <div class="competitor-name-row">
+            <div class="competitor-avatar">${abbr}</div>
+            <div>
+              <div class="competitor-name">${escHtml(comp.name)}</div>
+              <div class="competitor-mention-count">${mentionCount} mentions</div>
+            </div>
+          </div>
+          <span class="sentiment-badge ${sentimentClass(comp.sentiment)}">${cap(comp.sentiment || 'neutral')}</span>
+        </div>
+        <div>
+          <div class="body-section">
+            <div class="body-section-title">Sentiment overview</div>
+            <p class="sentiment-text">${escHtml(comp.sentiment_summary || 'No sentiment data.')}</p>
+          </div>
+          ${themes ? `<div class="body-section"><div class="body-section-title">Top recurring themes</div><div class="themes-list">${themes}</div></div>` : ''}
+          ${quotes ? `<div class="body-section"><div class="body-section-title">Notable quotes & discussions</div><div class="quotes-list">${quotes}</div></div>` : ''}
+          ${threats ? `<div class="body-section"><div class="body-section-title">Threats to monitor</div>${threats}</div>` : ''}
+        </div>`;
+      compEl.appendChild(el);
+    });
+
+    // Opportunities
+    const oppsEl = document.getElementById('opportunitiesSection');
+    oppsEl.innerHTML = '';
+    if (data.positioning_opportunities?.length) {
+      const items = data.positioning_opportunities.map((o, i) => `
+        <div class="opp-item">
+          <div class="opp-number">0${i + 1}</div>
+          <div>
+            <div class="opp-title-text">${escHtml(o.title)}</div>
+            <div class="opp-desc">${escHtml(o.description)}</div>
+          </div>
+        </div>`).join('');
+      oppsEl.innerHTML = `
+        <div class="opportunities-section">
+          <div class="opps-header"><span style="font-size:18px">◎</span><span class="opps-title">Positioning Opportunities for Deskflow</span></div>
+          <div class="opps-body">${items}</div>
+        </div>`;
+    }
+    if (data.analyst_note) {
+      oppsEl.innerHTML += `<div style="border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-top:8px;display:flex;gap:12px;align-items:flex-start;">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding-top:2px;flex-shrink:0;white-space:nowrap;">Analyst note</div>
+        <p style="font-size:13px;line-height:1.7;color:var(--ink2);">${escHtml(data.analyst_note)}</p>
+      </div>`;
+    }
+
+    document.getElementById('briefingSection').style.display = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Markdown export ──
+  function buildMarkdown(data, stats, active) {
+    const now = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    let md = `# ${data.headline || 'Competitive Intelligence Briefing'}\n\n`;
+    md += `**Generated:** ${now}  \n`;
+    md += `**Competitors monitored:** ${active.map(c => c.name).join(', ')}  \n`;
+    md += `**Total mentions:** ${stats?.total || 0} (HN: ${stats?.bySource?.HN || 0}, Reddit: ${stats?.bySource?.Reddit || 0})\n\n---\n\n`;
+    if (data.executive_summary) md += `## Executive Summary\n\n${data.executive_summary}\n\n`;
+    (data.competitors || []).forEach(comp => {
+      md += `## ${comp.name}\n\n`;
+      md += `**Sentiment:** ${comp.sentiment || 'N/A'} (score: ${(comp.sentiment_score || 0).toFixed(2)})\n\n${comp.sentiment_summary || ''}\n\n`;
+      if (comp.top_themes?.length) md += `**Top themes:** ${comp.top_themes.join(', ')}\n\n`;
+      if (comp.notable_quotes?.length) {
+        md += `### Notable Quotes\n\n`;
+        comp.notable_quotes.forEach(q => { md += `> "${q.text}"\n> *${q.source} — ${q.context || ''}*\n\n`; });
+      }
+      if (comp.threats?.length) {
+        md += `### Threats\n\n`;
+        comp.threats.forEach(t => { md += `- ${t}\n`; });
+        md += '\n';
+      }
+    });
+    if (data.positioning_opportunities?.length) {
+      md += `## Positioning Opportunities for Deskflow\n\n`;
+      data.positioning_opportunities.forEach((o, i) => {
+        md += `### ${i + 1}. ${o.title}\n\n${o.description}\n\n`;
+      });
+    }
+    if (data.analyst_note) md += `---\n\n**Analyst note:** ${data.analyst_note}\n`;
+    return md;
+  }
+
+  function downloadMarkdown() {
+    if (!rawMarkdown) return;
+    const blob = new Blob([rawMarkdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `deskflow-intel-${new Date().toISOString().slice(0, 10)}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function resetUI() {
+    document.getElementById('briefingSection').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('errorSection').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Utilities ──
+  function escHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+  function iconSVG(type) {
+    const icons = {
+      cal: '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><rect x="2" y="3" width="12" height="12" rx="1.5"/><path d="M5 1v4M11 1v4M2 8h12"/></svg>',
+      clock: '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5l2 2"/></svg>',
+      doc: '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h8"/></svg>'
+    };
+    return icons[type] || '';
+  }
+
+  // ── Init ──
+  renderCompetitors();
+</script>
+</body>
+</html>
